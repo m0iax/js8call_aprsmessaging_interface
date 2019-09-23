@@ -3,30 +3,40 @@ from tkinter import *
 from tkinter.ttk import *
 
 from tkinter.scrolledtext import ScrolledText
+from subprocess import call
+import os
+    
+TYPE_TX_SEND='TX.SEND_MESSAGE'
+TYPE_TX_SETMESSAGE='TX.SET_TEXT'
 
-#def setJS8CallText:
-    
-#def txViaJS8Call:
-    
 
      
 class UserInterface:
-    
+    mycall="M0IAX"
     first=True
     addr = ('127.0.0.1',65500)
     getResponse=False
     laststatusString=""
-
+    seq=1
+    def sendMessageToJS8Call(self, messageType, messageString):
+        
+        print(messageType+" "+messageString)
+        
+        cmdstring = "echo '{\"params\": {}, \"type\": \""+messageType+"\", \"value\":\""+messageString+"\"'} | nc -l -u -w 10 2237"
+        print(cmdstring)
+        os.system(cmdstring)
+        
     def createMessageString(self):
         messageString=""
         mode=""
         if self.combo.get()=="Email":
             mode="EMAIL-2"
-        if self.combo.get()=="SMS":
+        elif self.combo.get()=="SMS":
+            mode = "SMSGTE"
+        elif self.combo.get()=="APRS":
             mode=self.combo.get()
-        
-        
-        
+           
+        mode = mode.ljust(9)
         if self.tocall.get()=="":
             return "Error, no email address is set"
         
@@ -35,20 +45,26 @@ class UserInterface:
         if text=="":
             return "message is empty, please enter a message to send"
         
-        messageString = mode+" "+self.tocall.get()+" "+text
+        message = "@ALLCALL APRS::"+mode+":"+self.tocall.get()+" "+text+" {"+str(self.seq)+"}"
+        
+        self.seq=self.seq+1
+        
+        messageString = message #mode+" "+self.tocall.get()+" "+text
         return messageString
     
     def setMessage(self):
- 
+        messageType=TYPE_TX_SETMESSAGE
+        
         messageString=self.createMessageString()
         
-        print(messageString)
+        self.sendMessageToJS8Call(messageType, messageString)
         
     def txMessage(self):
         
+        messageType=TYPE_TX_SEND
         messageString=self.createMessageString()
         
-        print(messageString)
+        self.sendMessageToJS8Call(messageType, messageString)
         
     def __init__(self):
         
@@ -56,7 +72,7 @@ class UserInterface:
  
         self.window.title("APRS Messaging for JS8Call")
  
-        self.window.geometry('350x200')
+        self.window.geometry('350x200+300+300')
  
         self.combo = Combobox(self.window)
  
@@ -106,3 +122,4 @@ class UserInterface:
         self.window.mainloop()
     
 ui = UserInterface()
+
