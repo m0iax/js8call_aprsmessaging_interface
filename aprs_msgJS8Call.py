@@ -166,9 +166,9 @@ class UserInterface:
  
         self.lbl1.grid(column=0, row=1,columnspan=2)
  
-        self.combo2 = Combobox(self.window)
+        self.combo2 = Combobox(self.window, state='readonly')
  
-        self.combo2['values']= ("Normal", "xxx", "yyy")
+        self.combo2['values']= ("Normal")
  
         self.combo2.current(0) #set the selected item
  
