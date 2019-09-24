@@ -90,7 +90,7 @@ class UserInterface:
             tocallsign=tocallsign.ljust(9)
             message = "@ALLCALL APRS::"+tocallsign+":"+text+"{"+number+"}"
         else:
-            message = None
+            message = "@ALLCALL APRS::"+mode+":"+self.tocall.get()+" "+text+"{"+number+"}"
         
         self.seq=self.seq+1
         #APRS sequence number is 2 char, so reset if >99
@@ -133,7 +133,7 @@ class UserInterface:
             return
 
         self.sendMessageToJS8Call(messageType, messageString)
-        self.showMessage(MSG_INFO,"JS8Call will now transmite the message,")
+        self.showMessage(MSG_INFO,"JS8Call will now transmit the message,")
     def comboChange(self, event):
         print(self.combo.get())
         mode = self.combo.get()
