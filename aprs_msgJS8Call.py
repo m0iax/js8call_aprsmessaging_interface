@@ -2,8 +2,16 @@
 '''
 Created on 23 September 2019
 APRS Messageing Using JS8Call Copyright 2019 M0IAX
+
+With thanks to Jordan, KN4CRD for JS8Call - http://js8call.com
+
 @author: Mark Bumstead M0IAX
 http://m0iax.com
+
+this is the lite version and uses a unix command to send the message to JS8Call,
+this was adapted from a script by Jason, KM4ACK.
+
+I may consider writing a more complicated version to use more of the JS8Call API
 '''
 
 from tkinter import * 
