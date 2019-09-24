@@ -1,3 +1,11 @@
+#! /usr/bin/python3
+'''
+Created on 23 September 2019
+APRS Messageing Using JS8Call Copyright 2019 M0IAX
+@author: Mark Bumstead M0IAX
+http://m0iax.com
+'''
+
 from tkinter import * 
  
 from tkinter.ttk import *
@@ -20,6 +28,9 @@ class UserInterface:
     seq=1
     def sendMessageToJS8Call(self, messageType, messageString):
         
+        if messageString==None:
+            return
+        
         print(messageType+" "+messageString)
         
         cmdstring = "echo '{\"params\": {}, \"type\": \""+messageType+"\", \"value\":\""+messageString+"\"'} | nc -l -u -w 10 2237"
@@ -37,17 +48,32 @@ class UserInterface:
             mode=self.combo.get()
            
         mode = mode.ljust(9)
+        print(mode)
         if self.tocall.get()=="":
             return "Error, no email address is set"
         
         text=self.st.get('1.0', 'end-1c')  # Get all text in widget.
     
         if text=="":
-            return "message is empty, please enter a message to send"
+            return "Error, message is empty, please enter a message to send"
         
-        message = "@ALLCALL APRS::"+mode+":"+self.tocall.get()+" "+text+" {"+str(self.seq)+"}"
+        number = self.seq
+        number = format(number, '02d')
+#        t.rjust(10, '0')
+        if self.combo.get()=="Email":
+            message = "@ALLCALL APRS::"+mode+":"+self.tocall.get()+" "+text+"{"+number+"}"
+        elif self.combo.get()=="APRS":
+            tocallsign=self.tocall.get()
+            tocallsign=tocallsign.ljust(9)
+            message = "@ALLCALL APRS::"+tocallsign+":"+text+"{"+number+"}"
+        else:
+            message = None
         
         self.seq=self.seq+1
+        #APRS sequence number is 2 char, so reset if >99
+        if self.seq>99:
+            self.seq=1
+        
         
         messageString = message #mode+" "+self.tocall.get()+" "+text
         return messageString
@@ -57,6 +83,10 @@ class UserInterface:
         
         messageString=self.createMessageString()
         
+        if messageString.startswith("Error"):
+            print(messageString)
+            return
+    
         self.sendMessageToJS8Call(messageType, messageString)
         
     def txMessage(self):
@@ -64,8 +94,22 @@ class UserInterface:
         messageType=TYPE_TX_SEND
         messageString=self.createMessageString()
         
+        if messageString.startswith("Error"):
+            print(messageString)
+            return
+
         self.sendMessageToJS8Call(messageType, messageString)
-        
+    
+    def comboChange(self, event):
+        print(self.combo.get())
+        mode = self.combo.get()
+        if mode=="APRS":
+            self.callLbl.config(text='Enter Callsign (including SSID)')
+        elif mode=="Email":
+            self.callLbl.config(text='Enter Email Address to send to')
+        elif mode=="SMS":
+            self.callLbl.config(text='Enter cell phone number')
+            
     def __init__(self):
         
         self.window = Tk()
@@ -74,9 +118,11 @@ class UserInterface:
  
         self.window.geometry('350x200+300+300')
  
-        self.combo = Combobox(self.window)
- 
-        self.combo['values']= ("Email", "SMS")
+        self.combo = Combobox(self.window, state='readonly')
+        
+        self.combo.bind('<<ComboboxSelected>>', self.comboChange)    
+    
+        self.combo['values']= ("Email", "SMS", "APRS")
  
         self.combo.current(0) #set the selected item
  
@@ -95,9 +141,9 @@ class UserInterface:
         self.combo2.grid(column=0, row=2,columnspan=2)
  
  
-        self.lbl = Label(self.window, text="Enter Email Address", justify="left")
+        self.callLbl = Label(self.window, text="Enter Email Address", justify="left")
  
-        self.lbl.grid(column=0, row=3,columnspan=2)
+        self.callLbl.grid(column=0, row=3,columnspan=2)
  
         self.tocall = Entry(self.window,width=30)
  
@@ -118,7 +164,15 @@ class UserInterface:
 
         self.btn2.grid(column=1, row=9)
 
-        self.window.geometry("350x300+300+300")
+        self.note1label = Label(self.window, text="Click Set JS8Call text to set the message text in JS8Call", justify="center", wraplength=300)
+ 
+        self.note1label.grid(column=0, row=10,columnspan=2)
+ 
+        self.note1label = Label(self.window, text="Click TX with JS8Call to set the message text in JS8Call and start transmitting", justify="center", wraplength=300)
+ 
+        self.note1label.grid(column=0, row=11,columnspan=2)
+ 
+        self.window.geometry("350x350+300+300")
         self.window.mainloop()
     
 ui = UserInterface()
