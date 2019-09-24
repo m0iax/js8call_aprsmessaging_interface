@@ -15,16 +15,20 @@ I may consider writing a more complicated version to use more of the JS8Call API
 '''
 
 from tkinter import * 
- 
+from tkinter import messagebox
+
 from tkinter.ttk import *
 
 from tkinter.scrolledtext import ScrolledText
 from subprocess import call
 import os
-    
+import psutil
+
 TYPE_TX_SEND='TX.SEND_MESSAGE'
 TYPE_TX_SETMESSAGE='TX.SET_TEXT'
-
+MSG_ERROR='ERROR'
+MSG_INFO='INFO'
+MSG_WARN='WARN'
 
      
 class UserInterface:
@@ -34,7 +38,18 @@ class UserInterface:
     getResponse=False
     laststatusString=""
     seq=1
+    def showMessage(self, messagetype, messageString):
+        if messagetype==MSG_ERROR:
+            messagebox.showerror("Error", messageString)
+        elif messagetype==MSG_WARN:
+            messagebox.showwarning("Warning",messageString)
+        elif messagetype==MSG_INFO:
+            messagebox.showinfo("Information",messageString)
+            
     def sendMessageToJS8Call(self, messageType, messageString):
+        if self.checkJS8CallRunning()==False:
+            self.showMessage(MSG_ERROR, "JS8Call is not runnung. Please run it before clicking the button,")
+            return
         
         if messageString==None:
             return
@@ -85,6 +100,17 @@ class UserInterface:
         
         messageString = message #mode+" "+self.tocall.get()+" "+text
         return messageString
+
+    def checkJS8CallRunning(self):
+        
+        retval = False
+        #js8callText = "JS8Call Is not running."
+        if "js8call" in (p.name() for p in psutil.process_iter()):
+            retval = True
+            print("JS8Call is RUNNING")
+        
+        print ("retval is "+str(retval))
+        return retval
     
     def setMessage(self):
         messageType=TYPE_TX_SETMESSAGE
@@ -92,11 +118,11 @@ class UserInterface:
         messageString=self.createMessageString()
         
         if messageString.startswith("Error"):
-            print(messageString)
+            self.showMessage(MSG_ERROR, messageString)
             return
     
         self.sendMessageToJS8Call(messageType, messageString)
-        
+        self.showMessage(MSG_INFO, "Message text set in JS8Call, please use JS8Call to send the message.")
     def txMessage(self):
         
         messageType=TYPE_TX_SEND
@@ -107,7 +133,7 @@ class UserInterface:
             return
 
         self.sendMessageToJS8Call(messageType, messageString)
-    
+        self.showMessage(MSG_INFO,"JS8Call will now transmite the message,")
     def comboChange(self, event):
         print(self.combo.get())
         mode = self.combo.get()
