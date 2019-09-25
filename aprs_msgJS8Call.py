@@ -49,16 +49,18 @@ class UserInterface:
     def sendMessageToJS8Call(self, messageType, messageString):
         if self.checkJS8CallRunning()==False:
             self.showMessage(MSG_ERROR, "JS8Call is not runnung. Please run it before clicking the button,")
-            return
+            return False
         
         if messageString==None:
-            return
+            return False
         
-        print(messageType+" "+messageString)
+       # print(messageType+" "+messageString)
         
         cmdstring = "echo '{\"params\": {}, \"type\": \""+messageType+"\", \"value\":\""+messageString+"\"'} | nc -l -u -w 10 2237"
-        print(cmdstring)
+        #print(cmdstring)
         os.system(cmdstring)
+        
+        return True
         
     def createMessageString(self):
         messageString=""
@@ -71,7 +73,7 @@ class UserInterface:
             mode=self.combo.get()
            
         mode = mode.ljust(9)
-        print(mode)
+       # print(mode)
         if self.tocall.get()=="":
             return "Error, no email address is set"
         
@@ -90,7 +92,7 @@ class UserInterface:
             tocallsign=tocallsign.ljust(9)
             message = "@ALLCALL APRS::"+tocallsign+":"+text+"{"+number+"}"
         else:
-            message = "@ALLCALL APRS::"+mode+":"+self.tocall.get()+" "+text+"{"+number+"}"
+            message = "@ALLCALL APRS::"+mode+":@"+self.tocall.get()+" "+text+"{"+number+"}"
         
         self.seq=self.seq+1
         #APRS sequence number is 2 char, so reset if >99
@@ -107,9 +109,9 @@ class UserInterface:
         #js8callText = "JS8Call Is not running."
         if "js8call" in (p.name() for p in psutil.process_iter()):
             retval = True
-            print("JS8Call is RUNNING")
+            #print("JS8Call is RUNNING")
         
-        print ("retval is "+str(retval))
+        #print ("retval is "+str(retval))
         return retval
     
     def setMessage(self):
@@ -121,21 +123,25 @@ class UserInterface:
             self.showMessage(MSG_ERROR, messageString)
             return
     
-        self.sendMessageToJS8Call(messageType, messageString)
-        self.showMessage(MSG_INFO, "Message text set in JS8Call, please use JS8Call to send the message.")
+        success = self.sendMessageToJS8Call(messageType, messageString)
+        
+        if success==True:
+            self.showMessage(MSG_INFO, "Message text set in JS8Call, please use JS8Call to send the message.")
+            
     def txMessage(self):
         
         messageType=TYPE_TX_SEND
         messageString=self.createMessageString()
         
         if messageString.startswith("Error"):
-            print(messageString)
+          #  print(messageString)
             return
 
-        self.sendMessageToJS8Call(messageType, messageString)
-        self.showMessage(MSG_INFO,"JS8Call will now transmit the message,")
+        success = self.sendMessageToJS8Call(messageType, messageString)
+        if success==True:
+            self.showMessage(MSG_INFO,"JS8Call will now transmit the message,")
     def comboChange(self, event):
-        print(self.combo.get())
+      #  print(self.combo.get())
         mode = self.combo.get()
         if mode=="APRS":
             self.callLbl.config(text='Enter Callsign (including SSID)')
