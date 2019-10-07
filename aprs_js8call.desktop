@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=APRS Messages for JS8Call
+Comment=Send APRS Messages using JS8Call By Mark M0IAX
+Icon=/usr/share/pixmaps/python3.xpm
+Exec=/home/pi/aprs_messaging_interface_js8call/aprs_msgJS8Call.py
+Type=Application
+Encoding=UTF-8
+Terminal=false
+Categories=Hamradio;
