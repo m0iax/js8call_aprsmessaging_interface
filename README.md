@@ -8,11 +8,18 @@ Uses unix os to send the UDP message to JS8Call, adaper from a script by Jason, 
 
 Written for Raspberry Pi Debian Buster, but sould work on other unix builds. 
 I'll make a version for windows when I casn figure out the equivilent windows command to send the message
-Requires Python3 but may work on older versions.
-
+Requires Python3 but may work on older versions
 Install pre-requisites before running:
 
 pip3 install psutil
+
+Ive added a desktop shortcut file in response top some questions.
+Download the file to your desktop, edit the file to the correct path to where you downloaded the aprs_ app to. Double click on the .desktop file and click on execute or execute in terminal.
+
+Enjoy!
+
+73
+Mark
 
 
 
