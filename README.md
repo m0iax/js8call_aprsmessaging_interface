@@ -14,7 +14,7 @@ Install pre-requisites before running:
 pip3 install psutil
 
 Ive added a desktop shortcut file in response top some questions.
-Download the file to your desktop, edit the file to the correct path to where you downloaded the aprs_ app to. Double click on the .desktop file and click on execute or execute in terminal.
+Download the file to your desktop, edit the file to the correct path to where you downloaded the aprs_msgJS8Call.py app to. Double click on the .desktop file and click on execute or execute in terminal.
 
 Enjoy!
 
