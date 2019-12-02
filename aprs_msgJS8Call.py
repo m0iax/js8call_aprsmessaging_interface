@@ -86,13 +86,13 @@ class UserInterface:
         number = format(number, '02d')
 #        t.rjust(10, '0')
         if self.combo.get()=="Email":
-            message = "@ALLCALL APRS::"+mode+":"+self.tocall.get()+" "+text+"{"+number+"}"
+            message = "@APRSIS CMD :"+mode+":"+self.tocall.get()+" "+text+"{"+number+"}"
         elif self.combo.get()=="APRS":
             tocallsign=self.tocall.get()
             tocallsign=tocallsign.ljust(9)
-            message = "@ALLCALL APRS::"+tocallsign+":"+text+"{"+number+"}"
-        else:
-            message = "@ALLCALL APRS::"+mode+":@"+self.tocall.get()+" "+text+"{"+number+"}"
+            message = "@APRSIS CMD :"+tocallsign+":"+text+"{"+number+"}"
+        else: 
+            message = "@APRSIS CMD :"+mode+":@"+self.tocall.get()+" "+text+"{"+number+"}"
         
         self.seq=self.seq+1
         #APRS sequence number is 2 char, so reset if >99
